@@ -1,1 +1,1 @@
-
+NAM12km-96hr contains 4 directories of tdumps for 500, 1500, 3500, and 5500 AGL runs, one run per 6-hour interval. Each run goes back 96 hours due to the domain boundaries for NAM. The runs originate from the AppalAIR site and span 1/2019 through to 6/2023. All vailable MET data is included in the tdumps.

@@ -1,0 +1,205 @@
+%Tess Mickey and Dr. Thaxton 
+%App State Physics and Astronomy
+%Defining cluster number for each hour at specified heights for HYSPLIT and
+%AppalAIR summer 2023 measurements June 2023 - August 2023
+%import cluslist data (each file depends on height and aerosol classification already) 
+
+%% Set up the Import Options and import the data
+opts = delimitedTextImportOptions("NumVariables", 11);
+% Specify range and delimiter
+opts.DataLines = [1, Inf];
+opts.Delimiter = "_";
+% Specify column names and types
+opts.VariableNames = ["Var1", "Var2", "Var3", "Var4", "Var5", "Var6", "Var7", "Var8", "Var9", "Var10", "Var11"];
+opts.SelectedVariableNames = "Var1";
+opts.VariableTypes = ["string", "string", "string", "string", "string", "string", "string", "string", "string", "string", "string"];
+% Specify file level properties
+opts.ExtraColumnsRule = "ignore";
+opts.EmptyLineRule = "read";
+% Specify variable properties
+opts = setvaropts(opts, ["Var1", "Var2", "Var3", "Var4", "Var5", "Var6", "Var7", "Var8", "Var9", "Var10", "Var11"], "WhitespaceRule", "preserve");
+opts = setvaropts(opts, ["Var1", "Var2", "Var3", "Var4", "Var5", "Var6", "Var7", "Var8", "Var9", "Var10", "Var11"], "EmptyFieldRule", "auto");
+% read in low 500 cluslist
+x500_LO_cluslist = readtable("/MATLAB Drive/500_LO_cluslist.txt", opts);
+LOlen = height(x500_LO_cluslist);
+for i=1:LOlen
+    usable = x500_LO_cluslist.Var1;
+    nice = char(usable(i));
+    yr(i)=str2num(nice(15:16));
+    fullyr(i)=strcat("20", num2str(yr(i)));
+    mm(i)=str2num(nice(18:19));
+    if mm(i)<10
+        mmstr=strcat('0',num2str(mm(i)));
+    else
+        mmstr=strcat(num2str(mm(i)));
+    end
+    dd(i)=str2num(nice(21:22));
+    if dd(i)<10
+        ddstr=strcat('0',num2str(dd(i)));
+    else
+        ddstr=strcat(num2str(dd(i)));
+    end
+    hh(i)=str2num(nice(24:25));
+    if hh(i)<10
+        hhstr=strcat('0',num2str(hh(i)));
+    else
+        hhstr=strcat(num2str(hh(i)));
+    end
+    LOcn(i)=str2num(nice(5));
+    % makes a datetime string
+    LOdttemp=strcat(ddstr,'/',mmstr,'/',fullyr(i), {' '},hhstr, ':00');
+    % converts dttemp string to datetime variable in d 1xlen datetime
+    % (array? table? idk it just says datetime class) 
+    LOdt(i) = datetime(LOdttemp, 'InputFormat', 'dd/MM/yyyy HH:mm');
+end
+ 
+% read in average 500 cluslist 
+x500_AV_cluslist = readtable("/MATLAB Drive/500_AV_cluslist.txt", opts);
+AVlen = height(x500_AV_cluslist);
+iAV=1;
+for i=iAV:AVlen
+    AVusable = x500_AV_cluslist.Var1;
+    AVnice = char(AVusable(i));
+    AVyr(i)=str2num(AVnice(15:16));
+    AVfullyr(i)=strcat("20",num2str(AVyr(i)));
+    AVmm(i)=str2num(AVnice(18:19));
+    if AVmm(i)<10
+        AVmmstr=strcat('0',num2str(AVmm(i)));
+    else
+        AVmmstr=strcat(num2str(AVmm(i)));
+    end
+    AVdd(i)=str2num(AVnice(21:22));
+    if AVdd(i)<10
+        AVddstr=strcat('0',num2str(AVdd(i)));
+    else
+        AVddstr=strcat(num2str(AVdd(i)));
+    end
+    AVhh(i)=str2num(AVnice(24:25));
+    if AVhh(i)<10
+        AVhhstr=strcat('0',num2str(AVhh(i)));
+    else
+        AVhhstr=strcat(num2str(AVhh(i)));
+    end
+    AVcn(i)=str2num(AVnice(5));
+    % makes a datetime string
+    AVdttemp=strcat(AVddstr,'/',AVmmstr,'/',AVfullyr(i), {' '},AVhhstr, ':00');
+    % converts dttemp string to datetime variable in d 1xlen datetime
+    AVdt(i) = datetime(AVdttemp, 'InputFormat', 'dd/MM/yyyy HH:mm');
+end
+
+% read in high 500 cluslist 
+x500_HI_cluslist = readtable("/MATLAB Drive/500_HI_cluslist.txt", opts);
+HIlen = height(x500_HI_cluslist);
+% HIlen = 138 
+iHI=1;
+for i=iHI:HIlen
+    HIusable = x500_HI_cluslist.Var1;
+    HInice = char(HIusable(i));
+    HIyr(i)=str2num(HInice(15:16));
+    HIfullyr(i)=strcat("20",num2str(HIyr(i)));
+    HImm(i)=str2num(HInice(18:19));
+    if HImm(i)<10
+        HImmstr=strcat('0',num2str(HImm(i)));
+    else
+        HImmstr=strcat(num2str(HImm(i)));
+    end
+    HIdd(i)=str2num(HInice(21:22));
+    if HIdd(i)<10
+        HIddstr=strcat('0',num2str(HIdd(i)));
+    else
+        HIddstr=strcat(num2str(HIdd(i)));
+    end
+    HIhh(i)=str2num(HInice(24:25));
+    if HIhh(i)<10
+        HIhhstr=strcat('0',num2str(HIhh(i)));
+    else
+        HIhhstr=strcat(num2str(HIhh(i)));
+    end
+    HIcn(i)=str2num(HInice(5));
+    % makes a datetime string
+    HIdttemp=strcat(HIddstr,'/',HImmstr,'/',HIfullyr(i), {' '},HIhhstr, ':00');
+    % converts dttemp string to datetime variable in d 1xlen datetime
+    HIdt(i) = datetime(HIdttemp, 'InputFormat', 'dd/MM/yyyy HH:mm');
+end
+
+% read in very high 500 cluslist 
+x500_VH_cluslist = readtable("/MATLAB Drive/500_VH_cluslist.txt", opts);
+VHlen = height(x500_VH_cluslist);
+iVH=1;
+for i=iVH:VHlen
+    VHusable = x500_VH_cluslist.Var1;
+    VHnice = char(VHusable(i));
+    VHyr(i)=str2num(VHnice(15:16));
+    VHfullyr(i)=strcat("20",num2str(VHyr(i)));
+    VHmm(i)=str2num(VHnice(18:19));
+    if VHmm(i)<10
+        VHmmstr=strcat('0',num2str(VHmm(i)));
+    else
+        VHmmstr=strcat(num2str(VHmm(i)));
+    end
+    VHdd(i)=str2num(VHnice(21:22));
+    if VHdd(i)<10
+        VHddstr=strcat('0',num2str(VHdd(i)));
+    else
+        VHddstr=strcat(num2str(VHdd(i)));
+    end
+    VHhh(i)=str2num(VHnice(24:25));
+    if VHhh(i)<10
+        VHhhstr=strcat('0',num2str(VHhh(i)));
+    else
+        VHhhstr=strcat(num2str(VHhh(i)));
+    end
+    VHcn(i)=str2num(VHnice(5));
+    % makes a datetime string
+    VHdttemp=strcat(VHddstr,'/',VHmmstr,'/',VHfullyr(i), {' '},VHhhstr, ':00');
+    % converts dttemp string to datetime variable in d 1xlen datetime
+    VHdt(i) = datetime(VHdttemp, 'InputFormat', 'dd/MM/yyyy HH:mm');
+end
+save ('VHout.mat','VHdttemp','VHcn','VHdt','VHlen')
+save ('HIout.mat','HIdttemp','HIcn','HIdt','HIlen')
+save ('AVout.mat','AVdttemp','AVcn','AVdt','AVlen')
+save ('LOout.mat','LOdttemp','LOcn','LOdt','LOlen')
+
+% combine datetime arrays into one full array (length I got 2181 which is every datetime on spreadsheehett with a classification) 
+dt_all = [LOdt,AVdt,HIdt,VHdt];
+dt_all = dt_all';
+cn_all = [LOcn,AVcn,HIcn,VHcn];
+cn_all = cn_all';
+save ('CLUS.mat','dt_all','cn_all')
+
+% Load the data from the CLUS.mat file
+load('CLUS.mat');
+
+% Read the new worksheet
+worksheet_data = readtable('worksheet.xlsx', 'ReadVariableNames', false);
+
+% Extract datetime and category from the worksheet
+worksheet_dt = datetime(worksheet_data.Var1, 'InputFormat', 'MM/dd/yy HH:mm');
+worksheet_category = categorical(worksheet_data.Var2);
+
+%  arrays 
+matching_dt_all = [];
+matching_worksheet_dt = [];
+matching_category = [];
+matching_cn_all = [];
+
+% Compare datetimes and extract
+for i = 1:length(dt_all)
+    idx = find(worksheet_dt == dt_all(i));
+    if ~isempty(idx)
+        matching_dt_all = [matching_dt_all; dt_all(i)];
+        matching_worksheet_dt = [matching_worksheet_dt; worksheet_dt(idx)];
+        matching_category = [matching_category; worksheet_category(idx)];
+        matching_cn_all = [matching_cn_all; cn_all(i)];
+    end
+end
+
+% Create final table
+result_table = table(matching_dt_all, matching_worksheet_dt, matching_category, matching_cn_all);
+
+% Save the result_table to Excel file
+writetable(result_table, 'matching_data.xlsx');
+
+clearvars -except dt_all cn_all result_table
+
+
